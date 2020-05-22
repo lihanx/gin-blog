@@ -4,9 +4,12 @@ import (
 	"errors"
 	"sync"
 	"fmt"
+	"sort"
 	"strings"
 
+	"github.com/gin-gonic/gin"
 	"github.com/lihanx/gin-blog/utils"
+	"github.com/lihanx/gin-blog/ginengine"
 )
 
 type routerFunc struct {
@@ -45,5 +48,14 @@ func registerWithWeight(name string, weight int, f func(router *gin.Engine)) {
 		Name:	name,
 		Weight:	weight,
 		Func:	f,
+	})
+}
+
+func Setup() {
+	userRouterOnce.Do(func() {
+		sort.Sort(routers)
+		for _, r := range routers {
+			r.Func(ginengine.Engine)
+		}
 	})
 }
